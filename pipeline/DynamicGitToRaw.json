@@ -35,14 +35,13 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "JsonSource",
+									"type": "DelimitedTextSource",
 									"storeSettings": {
-										"type": "AzureBlobFSReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
 									},
 									"formatSettings": {
-										"type": "JsonReadSettings"
+										"type": "DelimitedTextReadSettings"
 									}
 								},
 								"sink": {
@@ -56,12 +55,26 @@
 										"fileExtension": ".txt"
 									}
 								},
-								"enableStaging": false
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_git_parameters",
-									"type": "DatasetReference"
+									"referenceName": "Ds_Git_Dynamic",
+									"type": "DatasetReference",
+									"parameters": {
+										"P_rel_url": {
+											"value": "@item().p_rel_url",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
