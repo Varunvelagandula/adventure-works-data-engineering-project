@@ -1,0 +1,15 @@
+{
+	"name": "adf-adventureworks-projects",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ba8cd2cf-3ca4-49ec-bd8e-ee1900fc91a2",
+		"tenantId": "0179613a-524d-4c51-919b-a2235bdc1459"
+	}
+}

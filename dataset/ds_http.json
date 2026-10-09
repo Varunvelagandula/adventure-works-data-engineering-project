@@ -1,0 +1,23 @@
+{
+	"name": "ds_http",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_HTTP",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "Varunvelagandula/adventure-works-data-engineering-project/refs/heads/main/data/AdventureWorks_Products.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
