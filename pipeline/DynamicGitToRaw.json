@@ -70,8 +70,8 @@
 									"referenceName": "Ds_Git_Dynamic",
 									"type": "DatasetReference",
 									"parameters": {
-										"P_rel_url": {
-											"value": "@item().p_rel_url",
+										"p_rel_url": {
+											"value": "@item().p_rel_url\n",
 											"type": "Expression"
 										}
 									}
