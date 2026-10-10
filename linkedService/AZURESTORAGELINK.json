@@ -1,0 +1,12 @@
+{
+	"name": "AZURESTORAGELINK",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://adventurestoragedatalake.dfs.core.windows.net/",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEMxNDMzNTUyLUU0QzQtNDNFNi04NzI5LUU2MEJCMEZCMTI2OF9kZTJmYzUzZi0xNjc3LTRlNTktYTUzNS1lNThiNjVjOTEzMTYiDQp9"
+		}
+	}
+}
