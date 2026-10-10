@@ -1,0 +1,22 @@
+{
+	"name": "DATASETHTTP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HTTPLINK",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "Varunvelagandula/adventure-works-data-engineering-project/refs/heads/main/data/AdventureWorks_Customers.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

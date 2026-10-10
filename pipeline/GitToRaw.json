@@ -48,13 +48,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_http",
+						"referenceName": "DATASETHTTP",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_raw",
+						"referenceName": "DATASETRAW",
 						"type": "DatasetReference"
 					}
 				]
