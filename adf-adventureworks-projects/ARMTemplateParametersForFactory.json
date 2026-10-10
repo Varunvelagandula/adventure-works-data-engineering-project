@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "adf-adventureworks-projects"
 		},
-		"LS_STORAGEDATALAKE_accountKey": {
+		"AZURESTORAGELINK_accountKey": {
 			"value": ""
 		},
-		"LS_HTTP_properties_typeProperties_url": {
+		"HTTPLINK_properties_typeProperties_url": {
 			"value": "https://raw.githubusercontent.com/"
 		},
-		"LS_STORAGEDATALAKE_properties_typeProperties_url": {
+		"AZURESTORAGELINK_properties_typeProperties_url": {
 			"value": "https://adventurestoragedatalake.dfs.core.windows.net/"
 		}
 	}

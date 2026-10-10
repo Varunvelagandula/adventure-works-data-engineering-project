@@ -7,15 +7,15 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-adventureworks-projects"
 		},
-		"LS_STORAGEDATALAKE_accountKey": {
+		"AZURESTORAGELINK_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_STORAGEDATALAKE'"
+			"metadata": "Secure string for 'accountKey' of 'AZURESTORAGELINK'"
 		},
-		"LS_HTTP_properties_typeProperties_url": {
+		"HTTPLINK_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
 		},
-		"LS_STORAGEDATALAKE_properties_typeProperties_url": {
+		"AZURESTORAGELINK_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adventurestoragedatalake.dfs.core.windows.net/"
 		}
@@ -25,14 +25,14 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_HTTP')]",
+			"name": "[concat(parameters('factoryName'), '/HTTPLINK')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "HttpServer",
 				"typeProperties": {
-					"url": "[parameters('LS_HTTP_properties_typeProperties_url')]",
+					"url": "[parameters('HTTPLINK_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
 				}
@@ -40,33 +40,89 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_STORAGEDATALAKE')]",
+			"name": "[concat(parameters('factoryName'), '/AZURESTORAGELINK')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureBlobFS",
 				"typeProperties": {
-					"url": "[parameters('LS_STORAGEDATALAKE_properties_typeProperties_url')]",
+					"url": "[parameters('AZURESTORAGELINK_properties_typeProperties_url')]",
 					"accountKey": {
 						"type": "SecureString",
-						"value": "[parameters('LS_STORAGEDATALAKE_accountKey')]"
+						"value": "[parameters('AZURESTORAGELINK_accountKey')]"
 					}
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Ds_Git_Dynamic')]",
+			"name": "[concat(parameters('factoryName'), '/DATASETHTTP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_HTTP",
+					"referenceName": "HTTPLINK",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "Varunvelagandula/adventure-works-data-engineering-project/refs/heads/main/data/AdventureWorks_Customers.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HTTPLINK')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DATASETRAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZURESTORAGELINK",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Customers.csv",
+						"folderPath": "Customers",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZURESTORAGELINK')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DATASETGITDYNAMIC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HTTPLINK",
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"P_rel_url": {
+					"p_rel_url": {
 						"type": "String"
 					}
 				},
@@ -76,7 +132,7 @@
 					"location": {
 						"type": "HttpServerLocation",
 						"relativeUrl": {
-							"value": "@dataset().P_rel_url",
+							"value": "@dataset().p_rel_url",
 							"type": "Expression"
 						}
 					},
@@ -88,23 +144,23 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_HTTP')]"
+				"[concat(variables('factoryId'), '/linkedServices/HTTPLINK')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Ds_sink_Dynamic')]",
+			"name": "[concat(parameters('factoryName'), '/DATASETSINKDYNAMIC')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_STORAGEDATALAKE",
+					"referenceName": "AZURESTORAGELINK",
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
 					"p_sink_folder": {
 						"type": "String"
 					},
-					"p_sink_filename": {
+					"p_sink_file": {
 						"type": "String"
 					}
 				},
@@ -114,7 +170,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": {
-							"value": "@dataset().p_sink_filename",
+							"value": "@dataset().p_sink_file",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -131,16 +187,16 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_STORAGEDATALAKE')]"
+				"[concat(variables('factoryId'), '/linkedServices/AZURESTORAGELINK')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_git_parameters')]",
+			"name": "[concat(parameters('factoryName'), '/DS_GIT_PARAMETERS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_STORAGEDATALAKE",
+					"referenceName": "AZURESTORAGELINK",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -148,8 +204,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "git.json",
-						"fileSystem": "parameters"
+						"fileName": "Git.json",
+						"fileSystem": "parameter"
 					}
 				},
 				"schema": {
@@ -168,209 +224,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_STORAGEDATALAKE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_http')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_HTTP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "Varunvelagandula/adventure-works-data-engineering-project/refs/heads/main/data/AdventureWorks_Products.csv"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_HTTP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_raw')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_STORAGEDATALAKE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products.csv",
-						"folderPath": "products",
-						"fileSystem": "bronze"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_STORAGEDATALAKE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DynamicGitToRaw')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEachGit",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "LookupGit",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('LookupGit').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "DynamicCopy",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "DelimitedTextSource",
-											"storeSettings": {
-												"type": "HttpReadSettings",
-												"requestMethod": "GET"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextReadSettings"
-											}
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "Ds_Git_Dynamic",
-											"type": "DatasetReference",
-											"parameters": {
-												"P_rel_url": {
-													"value": "@item().p_rel_url",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "Ds_sink_Dynamic",
-											"type": "DatasetReference",
-											"parameters": {
-												"p_sink_folder": {
-													"value": "@item().p_sink_folder",
-													"type": "Expression"
-												},
-												"p_sink_filename": {
-													"value": "@item().p_sink_file",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "LookupGit",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
-							},
-							"dataset": {
-								"referenceName": "ds_git_parameters",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2026-10-07T15:21:59Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_git_parameters')]",
-				"[concat(variables('factoryId'), '/datasets/Ds_Git_Dynamic')]",
-				"[concat(variables('factoryId'), '/datasets/Ds_sink_Dynamic')]"
+				"[concat(variables('factoryId'), '/linkedServices/AZURESTORAGELINK')]"
 			]
 		},
 		{
@@ -425,14 +279,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_http",
+								"referenceName": "DATASETHTTP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "ds_raw",
+								"referenceName": "DATASETRAW",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -446,8 +300,153 @@
 				"lastPublishTime": "2026-10-07T15:21:58Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_http')]",
-				"[concat(variables('factoryId'), '/datasets/ds_raw')]"
+				"[concat(variables('factoryId'), '/datasets/DATASETHTTP')]",
+				"[concat(variables('factoryId'), '/datasets/DATASETRAW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dynamicpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FOREACHGIT",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "DATASETGITDYNAMIC",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_rel_url": {
+													"value": "@item().p_rel_url",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DATASETSINKDYNAMIC",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_sink_folder": {
+													"value": "@item().p_sink_folder",
+													"type": "Expression"
+												},
+												"p_sink_file": {
+													"value": "@item().p_sink_file",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "DS_GIT_PARAMETERS",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_GIT_PARAMETERS')]",
+				"[concat(variables('factoryId'), '/datasets/DATASETGITDYNAMIC')]",
+				"[concat(variables('factoryId'), '/datasets/DATASETSINKDYNAMIC')]"
 			]
 		}
 	]

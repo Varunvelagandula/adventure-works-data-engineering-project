@@ -7,15 +7,15 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-adventureworks-projects"
 		},
-		"LS_STORAGEDATALAKE_accountKey": {
+		"AZURESTORAGELINK_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_STORAGEDATALAKE'"
+			"metadata": "Secure string for 'accountKey' of 'AZURESTORAGELINK'"
 		},
-		"LS_HTTP_properties_typeProperties_url": {
+		"HTTPLINK_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
 		},
-		"LS_STORAGEDATALAKE_properties_typeProperties_url": {
+		"AZURESTORAGELINK_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adventurestoragedatalake.dfs.core.windows.net/"
 		},
@@ -46,14 +46,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"LS_STORAGEDATALAKE_accountKey": {
-						"value": "[parameters('LS_STORAGEDATALAKE_accountKey')]"
+					"AZURESTORAGELINK_accountKey": {
+						"value": "[parameters('AZURESTORAGELINK_accountKey')]"
 					},
-					"LS_HTTP_properties_typeProperties_url": {
-						"value": "[parameters('LS_HTTP_properties_typeProperties_url')]"
+					"HTTPLINK_properties_typeProperties_url": {
+						"value": "[parameters('HTTPLINK_properties_typeProperties_url')]"
 					},
-					"LS_STORAGEDATALAKE_properties_typeProperties_url": {
-						"value": "[parameters('LS_STORAGEDATALAKE_properties_typeProperties_url')]"
+					"AZURESTORAGELINK_properties_typeProperties_url": {
+						"value": "[parameters('AZURESTORAGELINK_properties_typeProperties_url')]"
 					}
 				}
 			},
