@@ -4,7 +4,7 @@ This project demonstrates an end-to-end data engineering pipeline using Azure se
 
 ## Project Architecture
 
-![Project architecture](images/image 1.png)
+![Project architecture](images/image%201.png)
 
 ## Architecture Overview
 
