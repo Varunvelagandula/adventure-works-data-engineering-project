@@ -93,7 +93,9 @@ Azure Databricks reads raw files from Bronze, transforms them into a consistent 
    - Write curated outputs or aggregations to Gold when required.
 
 ![Azure Databricks compute and transformation](images/image%205.png)
-![Azure Databricks compute and transformation](images/image%210.png)
+
+
+![ Transformations](images/image%210.png)
 
 
 
