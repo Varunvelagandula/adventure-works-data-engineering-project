@@ -92,7 +92,7 @@ Azure Databricks reads raw files from Bronze, transforms them into a consistent 
    - Save cleaned data to Silver.
    - Write curated outputs or aggregations to Gold when required.
 
-![Transformations](images/image%210.png)
+![Transformations](images/image%2010.png)
 
 
 ## Step 5: Data Warehousing with Azure Synapse Analytics 📊
