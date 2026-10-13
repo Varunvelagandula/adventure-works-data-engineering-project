@@ -2,7 +2,10 @@
 
 This project demonstrates an end-to-end data engineering pipeline using Azure services. It ingests the AdventureWorks dataset from GitHub, stores raw data in Azure Data Lake Storage Gen2 (ADLS Gen2), transforms it with Azure Databricks, exposes curated data through Azure Synapse Analytics, and supports reporting with Power BI.
 
-![Project architecture](images/image 1.png)
+## Project Architecture
+
+![Project architecture](images/image%201.jpg)
+
 ## Architecture Overview
 
 ### Azure services used
@@ -13,34 +16,29 @@ This project demonstrates an end-to-end data engineering pipeline using Azure se
 - **Azure Synapse Analytics:** Queries curated data using SQL and provides a serving layer for analytics.
 - **Power BI:** Connects to reporting-ready data to create dashboards and business insights.
 
-> **Note:** Bronze, Silver, and Gold are logical data layers. They can be separate containers or folders, depending on how the storage account is configured.
+> **Note:** Bronze, Silver, and Gold are logical data layers. They may be separate containers or folders, depending on your storage configuration.
 
 ## Step 1: Setting Up the Azure Environment ⚙️
 
-The following Azure resources are used in the solution:
+The Azure resources used in this project are:
 
 1. **Azure Data Factory** — data ingestion, orchestration, and automation.
 2. **Azure Storage Account with ADLS Gen2** — storage for Bronze (raw), Silver (cleaned), and Gold (curated) data.
 3. **Azure Databricks workspace** — data transformation and processing.
 4. **Azure Synapse Analytics workspace** — SQL-based querying and analytics.
 
-Configure authentication and access permissions for each service. For production workloads, prefer managed identities and grant only the required permissions.
+Configure authentication and access permissions for each service. Use managed identities where supported and grant only the required permissions.
 
-**Screenshot — Azure resources:**  
-Add your Azure resource-group screenshot here.
-
-```markdown
-![Azure resources in the resource group](images/azure-resources.png)
-```
+![Azure resources](images/image%202.jpg)
 
 ## Step 2: Implementing the Data Pipeline Using ADF 🚀
 
-Azure Data Factory orchestrates the pipeline and copies the source files from GitHub into the Bronze layer of ADLS Gen2.
+Azure Data Factory orchestrates the pipeline and copies source files from GitHub into the Bronze layer of ADLS Gen2.
 
 ### Pipeline activities
 
 1. **Lookup activity**
-   - Reads a configuration list containing the source file names or URLs.
+   - Reads a configuration list containing source file names or URLs.
    - Supplies the list of files that need to be processed.
 
 2. **ForEach activity**
@@ -68,23 +66,17 @@ Copy activity (GitHub / HTTP → ADLS Gen2 Bronze)
 
 After a successful run, verify that the expected files exist in the Bronze container and that the copied files have non-zero sizes.
 
-**Screenshot — ADF pipeline:**  
-Add your pipeline screenshot here.
+![Azure Data Factory pipeline](images/image%203.jpg)
 
-```markdown
-![ADF Lookup, ForEach and Copy activities](images/adf-pipeline.png)
-```
+## Step 3: Storing Raw Data in the Bronze Layer
 
-**Screenshot — Bronze container:**  
-Add your Bronze container screenshot here.
+The Bronze layer stores the raw files copied from GitHub. Keeping the original data makes it easier to trace issues and rerun transformations.
 
-```markdown
-![Raw AdventureWorks files in Bronze](images/bronze-container.png)
-```
+![Bronze container with raw data](images/image%204.jpg)
 
-## Step 3: Data Transformation with Azure Databricks 🔄
+## Step 4: Data Transformation with Azure Databricks 🔄
 
-Azure Databricks reads the raw files from Bronze, transforms them into a consistent structure, and writes the processed data to Silver. Additional business-ready aggregations can then be written to Gold.
+Azure Databricks reads raw files from Bronze, transforms them into a consistent structure, and writes the processed data to Silver. Additional business-ready aggregations can be written to Gold.
 
 ### Key steps
 
@@ -94,10 +86,10 @@ Azure Databricks reads the raw files from Bronze, transforms them into a consist
 
 2. **Data Lake access**
    - Configure secure access to ADLS Gen2.
-   - Use the appropriate storage path and permissions.
+   - Use the correct storage path and permissions.
 
 3. **Read Bronze data**
-   - Load the source files into Spark DataFrames.
+   - Load source files into Spark DataFrames.
    - Inspect schemas, record counts, and sample rows.
 
 4. **Clean and transform**
@@ -106,10 +98,12 @@ Azure Databricks reads the raw files from Bronze, transforms them into a consist
    - Validate records and apply required business rules.
 
 5. **Write transformed data**
-   - Save cleaned data to the Silver layer.
+   - Save cleaned data to Silver.
    - Write curated outputs or aggregations to Gold when required.
 
-### Medallion layers
+![Azure Databricks compute and transformation](images/image%205.jpg)
+
+### Medallion architecture
 
 | Layer | Purpose |
 |---|---|
@@ -117,14 +111,7 @@ Azure Databricks reads the raw files from Bronze, transforms them into a consist
 | **Silver** | Cleaned, validated, and standardized data |
 | **Gold** | Curated, business-ready data for analytics and reporting |
 
-**Screenshot — Databricks compute or notebook:**  
-Add your Databricks screenshot here.
-
-```markdown
-![Databricks compute and transformation](images/databricks.png)
-```
-
-## Step 4: Data Warehousing with Azure Synapse Analytics 📊
+## Step 5: Data Warehousing with Azure Synapse Analytics 📊
 
 Azure Synapse Analytics provides the SQL layer used to query curated data for analytics. In this implementation, serverless SQL can query files in ADLS Gen2 without requiring a dedicated SQL pool.
 
@@ -152,60 +139,15 @@ Azure Synapse Analytics provides the SQL layer used to query curated data for an
    - Run test queries and confirm that the expected rows are returned.
    - Check that the external table location matches the actual folder and file format.
 
-### Example SQL pattern
+![Synapse SQL scripts](images/image%206.jpg)
 
-Adapt the database, schema, storage URL, credentials, folder paths, and file format to match your own environment. Do not paste secrets into a public repository.
+## Step 6: Gold Layer — Reporting-Ready Data
 
-```sql
--- Example only: use your actual database and schema.
-CREATE SCHEMA gold;
-GO
+The Gold layer contains curated data intended for business reporting and analytics. Confirm that the expected output files have been written to the correct container or folder before querying them from Synapse.
 
--- Create an external data source after configuring the
--- required credential/identity and storage permissions.
-CREATE EXTERNAL DATA SOURCE source_gold
-WITH (
-    LOCATION = 'https://<storage-account>.dfs.core.windows.net/<container>'
-);
-GO
+![Gold container](images/image%207.jpg)
 
-CREATE EXTERNAL FILE FORMAT format_parquet
-WITH (
-    FORMAT_TYPE = PARQUET
-);
-GO
-
--- Example only: the folder must exist and contain compatible files.
-CREATE EXTERNAL TABLE gold.example_table
-(
-    example_id INT
-)
-WITH
-(
-    LOCATION = 'example-folder/',
-    DATA_SOURCE = source_gold,
-    FILE_FORMAT = format_parquet
-);
-GO
-```
-
-> **Important:** The example SQL is a template, not a complete drop-in script. External-table column definitions must match the actual files. If your Gold files are Parquet, use a compatible Parquet external file format and the correct folder path.
-
-**Screenshot — Synapse SQL scripts:**  
-Add your Synapse SQL editor screenshot here.
-
-```markdown
-![Synapse external data source and tables](images/synapse-sql.png)
-```
-
-**Screenshot — Gold container:**  
-Add your Gold container screenshot here.
-
-```markdown
-![Curated data in the Gold layer](images/gold-container.png)
-```
-
-## Step 5: Business Intelligence Integration 📈
+## Step 7: Business Intelligence Integration with Power BI 📈
 
 Power BI connects to the reporting-ready data exposed through Synapse and turns it into dashboards and business insights.
 
@@ -217,12 +159,13 @@ Power BI connects to the reporting-ready data exposed through Synapse and turns 
 4. Build visuals for relevant business metrics.
 5. Validate totals against the source data and refresh the report.
 
-**Screenshot — Power BI dashboard:**  
-Add your Power BI screenshot here.
+![Power BI integration](images/image%208.jpg)
 
-```markdown
-![AdventureWorks Power BI dashboard](images/power-bi-dashboard.png)
-```
+## Step 8: Final Output
+
+The complete pipeline connects ingestion, storage, transformation, SQL analytics, and reporting in one end-to-end workflow.
+
+![Final project output](images/image%209.jpg)
 
 ## End-to-End Data Flow
 
@@ -258,26 +201,23 @@ AdventureWorks files on GitHub
 
 This project demonstrates how Azure services can work together to build a practical data engineering solution: ADF handles ingestion and orchestration, ADLS Gen2 stores the medallion layers, Databricks transforms the data, Synapse exposes it for SQL analytics, and Power BI presents business insights.
 
-## Repository Screenshots
+## Repository Structure
 
-To display your own screenshots in this README:
-
-1. Create a folder named `images` in the root of your GitHub repository.
-2. Upload your screenshot image files to that folder.
-3. Rename the files to match the paths used above, or update the Markdown image paths.
-4. Commit and push the updated `README.md` and `images` folder.
-
-Example repository layout:
+Make sure the repository has this structure. The image filenames and extensions must match exactly.
 
 ```text
 Adventure-Works-Azure-Data-Engineering-Project/
 ├── README.md
 └── images/
-    ├── azure-resources.png
-    ├── adf-pipeline.png
-    ├── bronze-container.png
-    ├── databricks.png
-    ├── synapse-sql.png
-    ├── gold-container.png
-    └── power-bi-dashboard.png
+    ├── image 1.jpg
+    ├── image 2.jpg
+    ├── image 3.jpg
+    ├── image 4.jpg
+    ├── image 5.jpg
+    ├── image 6.jpg
+    ├── image 7.jpg
+    ├── image 8.jpg
+    └── image 9.jpg
 ```
+
+> If your uploaded files are named `image1.jpg` (without a space), change the links to `images/image1.jpg`. If they are `.png` files, use `.png` instead of `.jpg`.
