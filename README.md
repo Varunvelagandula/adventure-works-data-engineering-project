@@ -186,23 +186,4 @@ AdventureWorks files on GitHub
 
 This project demonstrates how Azure services can work together to build a practical data engineering solution: ADF handles ingestion and orchestration, ADLS Gen2 stores the medallion layers, Databricks transforms the data, Synapse exposes it for SQL analytics, and Power BI presents business insights.
 
-## Repository Structure
 
-Make sure the repository has this structure. The image filenames and extensions must match exactly.
-
-```text
-Adventure-Works-Azure-Data-Engineering-Project/
-├── README.md
-└── images/
-    ├── image 1.jpg
-    ├── image 2.jpg
-    ├── image 3.jpg
-    ├── image 4.jpg
-    ├── image 5.jpg
-    ├── image 6.jpg
-    ├── image 7.jpg
-    ├── image 8.jpg
-    └── image 9.jpg
-```
-
-> If your uploaded files are named `image1.jpg` (without a space), change the links to `images/image1.jpg`. If they are `.png` files, use `.png` instead of `.jpg`.
