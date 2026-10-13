@@ -68,7 +68,7 @@ The Bronze layer stores the raw files copied from GitHub. Keeping the original d
 ## Step 4: Data Transformation with Azure Databricks 🔄
 
 Azure Databricks reads raw files from Bronze, transforms them into a consistent structure, and writes the processed data to Silver. Additional business-ready aggregations can be written to Gold.
-
+![Azure Databricks compute and transformation](images/image%205.png)
 ### Key steps
 
 1. **Compute setup**
@@ -92,11 +92,7 @@ Azure Databricks reads raw files from Bronze, transforms them into a consistent 
    - Save cleaned data to Silver.
    - Write curated outputs or aggregations to Gold when required.
 
-![Azure Databricks compute and transformation](images/image%205.png)
-
-
-![ Transformations](images/image%210.png)
-
+![Transformations](images/image%210.png)
 
 
 ## Step 5: Data Warehousing with Azure Synapse Analytics 📊
@@ -127,13 +123,16 @@ Azure Synapse Analytics provides the SQL layer used to query curated data for an
    - Run test queries and confirm that the expected rows are returned.
    - Check that the external table location matches the actual folder and file format.
 
-![Synapse SQL scripts](images/image%206.png)
+![Synapse SQL scripts](images/image%207.png)
+
+![ SQL scripts](images/image%208.png)
+
 
 ## Step 6: Gold Layer — Reporting-Ready Data
 
 The Gold layer contains curated data intended for business reporting and analytics. Confirm that the expected output files have been written to the correct container or folder before querying them from Synapse.
 
-![Gold container](images/image%207.png)
+![Gold container](images/image%209.png)
 
 ## Step 7: Business Intelligence Integration with Power BI 📈
 
@@ -146,8 +145,6 @@ Power BI connects to the reporting-ready data exposed through Synapse and turns 
 3. Define relationships and measures where needed.
 4. Build visuals for relevant business metrics.
 5. Validate totals against the source data and refresh the report.
-
-![Power BI integration](images/image%208.png)
 
 ## Step 8: Final Output
 
