@@ -29,7 +29,7 @@ The Azure resources used in this project are:
 
 Configure authentication and access permissions for each service. Use managed identities where supported and grant only the required permissions.
 
-![Azure resources](images/image%202.jpg)
+![Azure resources](images/image%202.png)
 
 ## Step 2: Implementing the Data Pipeline Using ADF 🚀
 
@@ -54,25 +54,16 @@ Azure Data Factory orchestrates the pipeline and copies source files from GitHub
    - Make the pipeline reusable when file names or source paths change.
    - Validate the URL, relative path, file name, and destination path for every item.
 
-**Expected flow:**
-
-```text
-Lookup (file configuration)
-        ↓
-ForEach (each file)
-        ↓
-Copy activity (GitHub / HTTP → ADLS Gen2 Bronze)
-```
 
 After a successful run, verify that the expected files exist in the Bronze container and that the copied files have non-zero sizes.
 
-![Azure Data Factory pipeline](images/image%203.jpg)
+![Azure Data Factory pipeline](images/image%203.png)
 
 ## Step 3: Storing Raw Data in the Bronze Layer
 
 The Bronze layer stores the raw files copied from GitHub. Keeping the original data makes it easier to trace issues and rerun transformations.
 
-![Bronze container with raw data](images/image%204.jpg)
+![Bronze container with raw data](images/image%204.png)
 
 ## Step 4: Data Transformation with Azure Databricks 🔄
 
@@ -101,15 +92,8 @@ Azure Databricks reads raw files from Bronze, transforms them into a consistent 
    - Save cleaned data to Silver.
    - Write curated outputs or aggregations to Gold when required.
 
-![Azure Databricks compute and transformation](images/image%205.jpg)
+![Azure Databricks compute and transformation](images/image%205.png)
 
-### Medallion architecture
-
-| Layer | Purpose |
-|---|---|
-| **Bronze** | Raw source data, preserved for traceability and reprocessing |
-| **Silver** | Cleaned, validated, and standardized data |
-| **Gold** | Curated, business-ready data for analytics and reporting |
 
 ## Step 5: Data Warehousing with Azure Synapse Analytics 📊
 
@@ -139,13 +123,13 @@ Azure Synapse Analytics provides the SQL layer used to query curated data for an
    - Run test queries and confirm that the expected rows are returned.
    - Check that the external table location matches the actual folder and file format.
 
-![Synapse SQL scripts](images/image%206.jpg)
+![Synapse SQL scripts](images/image%206.png)
 
 ## Step 6: Gold Layer — Reporting-Ready Data
 
 The Gold layer contains curated data intended for business reporting and analytics. Confirm that the expected output files have been written to the correct container or folder before querying them from Synapse.
 
-![Gold container](images/image%207.jpg)
+![Gold container](images/image%207.png)
 
 ## Step 7: Business Intelligence Integration with Power BI 📈
 
@@ -159,13 +143,13 @@ Power BI connects to the reporting-ready data exposed through Synapse and turns 
 4. Build visuals for relevant business metrics.
 5. Validate totals against the source data and refresh the report.
 
-![Power BI integration](images/image%208.jpg)
+![Power BI integration](images/image%208.png)
 
 ## Step 8: Final Output
 
 The complete pipeline connects ingestion, storage, transformation, SQL analytics, and reporting in one end-to-end workflow.
 
-![Final project output](images/image%209.jpg)
+![Final project output](images/image%209.png)
 
 ## End-to-End Data Flow
 
