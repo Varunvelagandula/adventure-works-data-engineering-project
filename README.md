@@ -3,7 +3,7 @@
 This project demonstrates an end-to-end data engineering pipeline using Azure services. It ingests the AdventureWorks dataset from GitHub, stores raw data in Azure Data Lake Storage Gen2 (ADLS Gen2), transforms it with Azure Databricks, exposes curated data through Azure Synapse Analytics, and supports reporting with Power BI.
 
 ## Architecture Overview
-![Project architecture](images/image1.jpg)
+![Project architecture](images/image 1.jpg)
 ```mermaid
 flowchart LR
     A[AdventureWorks dataset on GitHub] --> B[Azure Data Factory]
