@@ -1,0 +1,17 @@
+{
+	"name": "External Tables",
+	"properties": {
+		"content": {
+			"query": "CREATE DATABASE SCOPED CREDENTIAL cred_varun\nWITH\n    IDENTITY = 'Managed Identity'\n\nCREATE EXTERNAL DATA SOURCE source_silver\nWITH\n(\n    LOCATION = ' https://adventurestoragedatalake.blob.core.windows.net/silver',\n    CREDENTIAL = cred_varun\n)\n\nCREATE EXTERNAL DATA SOURCE source_gold\nWITH\n(\n    LOCATION = 'https://adventurestoragedatalake.blob.core.windows.net/gold',\n    CREDENTIAL = cred_varun\n)\n\nCREATE EXTERNAL FILE FORMAT format_parquet\nWITH\n(\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n)\n\n\n---------------------------------------------\n-------CREATE EXTERNAL TABLE EXTSALES\n---------------------------------------------\nCREATE EXTERNAL TABLE gold.extsales\nWITH\n(\n    LOCATION = 'extsales',\n    DATA_SOURCE = source_gold,\n    FILE_FORMAT = format_parquet\n)\n\nSELECT * FROM gold.Sales\n\nDROP EXTERNAL DATA SOURCE source_gold;\nGO\n\nCREATE EXTERNAL DATA SOURCE source_gold\nWITH\n(\n    LOCATION = 'https://adventurestoragedatalake.dfs.core.windows.net/gold',\n    CREDENTIAL = cred_varun\n);\nGO\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
